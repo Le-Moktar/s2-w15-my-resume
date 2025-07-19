@@ -1,0 +1,27 @@
+name: build and deploy image
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+env:
+    AWS_REGION: us-east-1
+    AWS_ROLE: ${{ secrets.AWS_ACTION_ROLE}}
+
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: clone repo   # share runner or github runner
+              uses: actions/checkout@v3 # Action or predefine command build by github to be use
+            - name: Aws creds config
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                role-to-assume: ${{ env.AWS_ROLE}}     # OIDC
+                aws-region: ${{ env.AWS_REGION}}
+            - name: loging to ecr
+              uses: aws-actions/amazon-ecr-login@v1
+
